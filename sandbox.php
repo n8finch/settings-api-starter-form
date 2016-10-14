@@ -23,6 +23,8 @@ function wporg_default_options() {
 	$defaults = array(
 		'wporg_field_activate'    => '',
 		'wporg_field_radio' => '',
+		'wporg_field_checkbox_option1' => '',
+		'wporg_field_checkbox_option2' => '',
 
 	);
 
@@ -92,6 +94,20 @@ function wporg_settings_init() {
 			'label_for'         => 'wporg_field_radio',
 			'class'             => 'wporg_row',
 			'wporg_custom_data' => 'radio-yass-plugin',
+		]
+	);
+
+	add_settings_field(
+		'wporg_field_checkbox', // as of WP 4.6 this value is used only internally
+		// use $args' label_for to populate the id inside the callback
+		__( 'Activate?', 'wporg' ),
+		'wporg_field_checkbox_cb',
+		'wporg',
+		'wporg_section_developers',
+		[
+			'label_for'         => 'wporg_field_checkbox',
+			'class'             => 'wporg_row',
+			'wporg_custom_data' => 'checkbox-yass-plugin',
 		]
 	);
 }
@@ -180,22 +196,49 @@ function wporg_field_radio_cb( $args ) {
 
 	<label for="wporg_options[<?= esc_attr( $args['label_for'] . 'option2' ); ?>]"><?= esc_html( 'Option 2', 'wporg' ); ?></label>
 
-
-
-<!--	<input type="radio" id="radio_example_one" name="sandbox_theme_input_examples[radio_example]" value="1" --><?//= checked( 1, $options['radio_example'], false ) ?><!--/>-->
-<!--	-->
-<!--	<label for="radio_example_one">Option One</label>-->
-<!--	-->
-<!--	<input type="radio" id="radio_example_two" name="sandbox_theme_input_examples[radio_example]" value="2"' --><?//= checked( 2, $options['radio_example'], false ) ?><!--/>-->
-<!--	-->
-<!--	<label for="radio_example_two">Option Two</label>-->
-
-
-
-
 	<?php
 }
 
+
+function wporg_field_checkbox_cb( $args ) {
+	// get the value of the setting we've registered with register_setting()
+	$options = get_option( 'wporg_options' );
+	// output the field
+
+	d('before', $options);
+
+	if( array_key_exists( 'wporg_field_checkbox_option1', $options) ) {
+		$is_checked_1 = $options['wporg_field_checkbox_option1'];
+	} else {
+		$is_checked_1 = '';
+	}
+
+	if( array_key_exists( 'wporg_field_checkbox_option2', $options) ) {
+		$is_checked_2 = $options['wporg_field_checkbox_option2'];
+	} else {
+		$is_checked_2 = '';
+	}
+
+
+
+	?>
+
+	<input type="checkbox" id="<?= esc_attr( $args['label_for'] . '_option1' ); ?>"
+	       data-custom="<?= esc_attr( $args['wporg_custom_data'] ); ?>"
+	       name="wporg_options[<?= esc_attr( $args['label_for'] . '_option1' ); ?>]"
+	       value="1" <?php checked( 1, $is_checked_1, true ); ?>/>
+
+	<label for="wporg_options[<?= esc_attr( $args['label_for'] . '_option1' ); ?>]"><?= esc_html( 'Option 1', 'wporg' ); ?></label>
+
+	<input type="checkbox" id="<?= esc_attr( $args['label_for'] . '_option2' ); ?>"
+	       data-custom="<?= esc_attr( $args['wporg_custom_data'] ); ?>"
+	       name="wporg_options[<?= esc_attr( $args['label_for'] . '_option2' ); ?>]"
+	       value="2" <?php checked( 2, $is_checked_2, true ); ?>/>
+
+	<label for="wporg_options[<?= esc_attr( $args['label_for'] . '_option2' ); ?>]"><?= esc_html( 'Option 2', 'wporg' ); ?></label>
+
+	<?php
+}
 
 /**
  * top level menu
