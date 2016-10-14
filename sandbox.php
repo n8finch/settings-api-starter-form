@@ -4,7 +4,7 @@
  *
  * @package     n8finch
  * @since       1.0.0
- * @author      hellofromTonya
+ * @author      finchps
  * @link        https://knowthecode.io
  * @license     GNU General Public License 2.0+
  */
@@ -25,6 +25,7 @@ function wporg_default_options() {
 		'wporg_field_radio' => '',
 		'wporg_field_checkbox_option1' => '',
 		'wporg_field_checkbox_option2' => '',
+		'wporg_field_text' => '',
 
 	);
 
@@ -55,19 +56,6 @@ function wporg_settings_init() {
 
 	// register a new field in the "wporg_section_developers" section, inside the "wporg" page
 
-	add_settings_field(
-		'wporg_field_activate', // as of WP 4.6 this value is used only internally
-		// use $args' label_for to populate the id inside the callback
-		__( 'Activate?', 'wporg' ),
-		'wporg_field_active_cb',
-		'wporg',
-		'wporg_section_developers',
-		[
-			'label_for'         => 'wporg_field_activate',
-			'class'             => 'wporg_row',
-			'wporg_custom_data' => 'custom',
-		]
-	);
 
 	add_settings_field(
 		'wporg_field_activate', // as of WP 4.6 this value is used only internally
@@ -108,6 +96,20 @@ function wporg_settings_init() {
 			'label_for'         => 'wporg_field_checkbox',
 			'class'             => 'wporg_row',
 			'wporg_custom_data' => 'checkbox-yass-plugin',
+		]
+	);
+
+	add_settings_field(
+		'wporg_field_text', // as of WP 4.6 this value is used only internally
+		// use $args' label_for to populate the id inside the callback
+		__( 'Activate?', 'wporg' ),
+		'wporg_field_text_cb',
+		'wporg',
+		'wporg_section_developers',
+		[
+			'label_for'         => 'wporg_field_text',
+			'class'             => 'wporg_row',
+			'wporg_custom_data' => 'text-yass-plugin',
 		]
 	);
 }
@@ -239,6 +241,36 @@ function wporg_field_checkbox_cb( $args ) {
 
 	<?php
 }
+
+
+function wporg_field_text_cb( $args ) {
+	// get the value of the setting we've registered with register_setting()
+	$options = get_option( 'wporg_options' );
+	// output the field
+
+	d('before', $options);
+
+	if( array_key_exists( 'wporg_field_text', $options) ) {
+		$is_checked = $options['wporg_field_text'];
+	} else {
+		$is_checked = '';
+	}
+
+	?>
+
+	<input type="text" id="<?= esc_attr( $args['label_for'] ); ?>"
+	       data-custom="<?= esc_attr( $args['wporg_custom_data'] ); ?>"
+	       name="wporg_options[<?= esc_attr( $args['label_for'] ); ?>]"
+	       value="<?php echo $is_checked; ?>"/>
+
+	<label for="wporg_options[<?= esc_attr( $args['label_for'] ); ?>]"><?= esc_html( 'Label', 'wporg' ); ?></label>
+
+
+	<?php
+}
+
+
+
 
 /**
  * top level menu
